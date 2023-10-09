@@ -1,0 +1,71 @@
+---
+title: Drag to reorder
+description: Veloxi example for implementing drag-to-reorder interaction
+head:
+  - tag: title
+    content: Drag to reorder | Veloxi
+---
+
+import PluginCode from '@components/PluginCode.vue'
+import DragToReorder from '@examples/DragToReorder.astro'
+import DragToReorderFunctional from '@code/examples/DragToReorderFunctional.mdx'
+import DragToReorderClassical from '@code/examples/DragToReorderClassical.mdx'
+
+<DragToReorder />
+
+## HTML
+
+```html
+<div class="list">
+  <div class="item" data-vel-plugin="DragToReorderPlugin" data-vel-view="item">
+    Item 1
+  </div>
+  <div class="item" data-vel-plugin="DragToReorderPlugin" data-vel-view="item">
+    Item 2
+  </div>
+  <div class="item" data-vel-plugin="DragToReorderPlugin" data-vel-view="item">
+    Item 3
+  </div>
+  <div class="item" data-vel-plugin="DragToReorderPlugin" data-vel-view="item">
+    Item 4
+  </div>
+</div>
+```
+
+## CSS
+
+```css
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px 0;
+  width: 100%;
+  max-width: 200px;
+}
+
+.item {
+  font-size: 18px;
+  background: whitesmoke;
+  padding: 8px 10px;
+  border-radius: 5px;
+  color: #222;
+  font-weight: 500;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  -webkit-touch-action: none;
+  will-change: transform;
+  box-shadow: 1px 2px 10px rgba(0, 0, 0, 0.2);
+}
+```
+
+## JavaScript
+
+<PluginCode client:load>
+  <div slot="FunctionalStyle">
+    <DragToReorderFunctional />
+  </div>
+  <div slot="ClassicalStyle">
+    <DragToReorderClassical />
+  </div>
+</PluginCode>

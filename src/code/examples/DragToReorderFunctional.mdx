@@ -1,0 +1,100 @@
+```js
+import { createApp, DragEventPlugin } from 'veloxi'
+
+const DragToReorderPlugin = (context) => {
+  const dragEventPlugin = context.useEventPlugin(DragEventPlugin)
+
+  let items
+
+  let draggingItem = null
+
+  const itemIdSlotMap = new Map()
+
+  const slotPositionMap = new Map()
+
+  context.setup(() => {
+    items = context.getViews('item')
+
+    items.forEach((item, index) => {
+      assignItemToSlot(item, index)
+      dragEventPlugin.addView(item)
+      item.position.animator.set('dynamic')
+      slotPositionMap.set(index, item.position.y)
+    })
+
+    dragEventPlugin.on(DragEvent, onDrag.bind(this))
+  })
+
+  function onDrag(event) {
+    if (event.isDragging) {
+      draggingItem = event.view
+      draggingItem.position.set({ x: event.x, y: event.y })
+      draggingItem.styles.zIndex = '2'
+
+      updateItemPositions()
+    } else {
+      if (!draggingItem) return
+      draggingItem.styles.zIndex = ''
+      draggingItem.position.set({
+        x: draggingItem.position.initialX,
+        y: getSlotPositionForItem(draggingItem)
+      })
+      draggingItem = null
+    }
+  }
+
+  function updateItemPositions() {
+    items
+      .filter((item) => item.id !== draggingItem?.id)
+      .forEach((item) => {
+        if (!draggingItem) return
+
+        const draggingItemSlot = itemIdSlotMap.get(draggingItem.id)
+        const itemSlot = itemIdSlotMap.get(item.id)
+
+        if (draggingItemSlot === undefined || itemSlot === undefined) return
+
+        const draggingItemPosition = draggingItem.position.y
+        const itemPosition = getSlotPositionForItem(item)
+
+        if (
+          draggingItemSlot < itemSlot &&
+          draggingItemPosition + draggingItem.size.height >
+            itemPosition + item.size.height / 2
+        ) {
+          assignItemToSlot(item, draggingItemSlot)
+          assignItemToSlot(draggingItem, itemSlot)
+          item.position.set({
+            y: slotPositionMap.get(draggingItemSlot)
+          })
+        } else if (
+          draggingItemSlot > itemSlot &&
+          draggingItemPosition < itemPosition + item.size.height / 2
+        ) {
+          assignItemToSlot(item, draggingItemSlot)
+          assignItemToSlot(draggingItem, itemSlot)
+          item.position.set({
+            y: slotPositionMap.get(draggingItemSlot)
+          })
+        }
+      })
+  }
+
+  function assignItemToSlot(item, slot) {
+    itemIdSlotMap.set(item.id, slot)
+  }
+
+  function getSlotPositionForItem(item) {
+    const slot = itemIdSlotMap.get(item.id)
+    return slotPositionMap.get(slot)
+  }
+}
+
+DragToReorderPlugin.pluginName = 'DragToReorderPlugin'
+
+const app = createApp()
+
+app.addPlugin(DragToReorderPlugin)
+
+app.run()
+```

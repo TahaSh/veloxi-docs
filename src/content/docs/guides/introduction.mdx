@@ -1,0 +1,78 @@
+---
+title: Introduction to Veloxi
+description: Introduction to Veloxi
+---
+
+import PluginCode from '@components/PluginCode.vue'
+import FollowMouse from '@examples/FollowMouse.astro'
+import FollowMouseFunctional from '@code/introduction/FollowMouseFunctional.mdx'
+import FollowMouseClassical from '@code/introduction/FollowMouseClassical.mdx'
+
+Veloxi is a UI engine for creating smooth interactions in the browser. It's called an engine because:
+
+- It abstracts away the low-level details of how the browser reads and updates the DOM.
+- It works directly with the DOM, so it's framework-agnostic.
+- It is **not** opinionated on how you use it to implement interactions.
+
+## Main Components
+
+A Veloxi app consists of three main parts: the app runner, plugins, and views.
+
+On each page, you will have a single **app** object running all the interactions on that page. Each interaction code will be written in a **plugin**, and a plugin will have access to the **views** assigned to it.
+
+So the relationship between these components is one-to-many: one app can contain multiple plugins, and one plugin can contain multiple views. This leads us to an important note: **each view can be owned only by a single plugin**.
+
+This design decision is critical to ensure that there are no conflicts between plugins when manipulating views.
+
+## Your First Plugin
+
+This example will provide a brief overview of how to use Veloxi. In this example, we will build a 'follow-the-mouse' interaction.
+
+<FollowMouse />
+
+This example has a single element for the circle.
+
+```html
+<div
+  class="circle"
+  data-vel-view="circle"
+  data-vel-plugin="FollowMousePlugin"
+></div>
+```
+
+This element will be accessed as a view within our plugin. The view's name is defined using the `data-vel-view` attribute, which will be `circle`. This view will be assigned to our plugin, which we'll call `FollowMousePlugin`; we'll use the `data-vel-plugin` data attribute for this purpose.
+
+To make the element look like a circle, we need to add this CSS:
+
+```css
+.circle {
+  width: 50px;
+  height: 50px;
+  background: whitesmoke;
+  border-radius: 50%;
+  will-change: transform;
+}
+```
+
+Now, we come to our plugin definition.
+
+<PluginCode client:load>
+  <div slot="FunctionalStyle">
+    <FollowMouseFunctional />
+  </div>
+  <div slot="ClassicalStyle">
+    <FollowMouseClassical />
+  </div>
+</PluginCode>
+
+Though this example may seem simple, it contains important parts we should look at one by one.
+
+In the upcoming sections of this guide, we'll cover:
+
+- How to work with single and multiple views.
+- Applying a plugin to a specific view (using scoped plugins).
+- Changing view properties like position, size, and rotation.
+- Adding animations to view properties.
+- Sending data to plugins.
+- Understanding global events vs. plugin events.
+- Using EventPlugins.

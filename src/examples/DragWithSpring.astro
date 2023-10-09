@@ -1,0 +1,62 @@
+<script>
+  import {
+    createApp,
+    type PluginFactory,
+    DragEventPlugin,
+    DragEvent
+  } from 'veloxi'
+
+  const DragWithSpringPlugin: PluginFactory = (context) => {
+    const dragEvent = context.useEventPlugin(DragEventPlugin)
+
+    context.setup(() => {
+      const draggable = context.getView('draggable')!
+      draggable.position.animator.set('spring')
+      dragEvent.addView(draggable)
+      dragEvent.on(DragEvent, (event) => {
+        if (event.isDragging) {
+          draggable.position.set({ x: event.x, y: event.y })
+        } else {
+          draggable.position.reset()
+        }
+      })
+    })
+  }
+
+  DragWithSpringPlugin.pluginName = 'DragWithSpringPlugin'
+  DragWithSpringPlugin.scope = 'draggable'
+
+  const app = createApp()
+  app.addPlugin(DragWithSpringPlugin)
+  app.run()
+</script>
+
+<style>
+  .example-container {
+    background: #000;
+    border: rgba(255, 255, 255, 0.5);
+    width: 100%;
+    overflow: hidden;
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .box {
+    width: 80px;
+    height: 80px;
+    background: whitesmoke;
+    border-radius: 5px;
+    touch-action: none;
+    will-change: transform;
+  }
+</style>
+
+<div class="example-container">
+  <div
+    class="box"
+    data-vel-view="draggable"
+    data-vel-plugin="DragWithSpringPlugin"
+  >
+  </div>
+</div>

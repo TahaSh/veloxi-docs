@@ -1,0 +1,53 @@
+<script>
+  import { createApp, Events, type View, type PluginFactory } from 'veloxi'
+
+  const FollowMousePlugin: PluginFactory = (context) => {
+    let circle: View
+
+    context.setup(() => {
+      circle = context.getView('circle')!
+      circle.position.animator.set('spring')
+    })
+
+    context.subscribeToEvents((eventBus) => {
+      eventBus.subscribeToEvent(Events.PointerMoveEvent, (event) => {
+        circle.position.set({
+          x: event.x + circle.getScroll().x - circle.size.width / 2,
+          y: event.y + circle.getScroll().y - circle.size.height / 2
+        })
+      })
+    })
+  }
+
+  FollowMousePlugin.pluginName = 'FollowMousePlugin'
+
+  const app = createApp()
+  app.addPlugin(FollowMousePlugin)
+  app.run()
+</script>
+
+<style>
+  .example-container {
+    background: #000;
+    border: rgba(255, 255, 255, 0.5);
+    width: 100%;
+    overflow: hidden;
+    height: 500px;
+  }
+  .circle {
+    width: 50px;
+    height: 50px;
+    background: whitesmoke;
+    border-radius: 50%;
+    will-change: transform;
+  }
+</style>
+
+<div class="example-container">
+  <div
+    class="circle"
+    data-vel-view="circle"
+    data-vel-plugin="FollowMousePlugin"
+  >
+  </div>
+</div>

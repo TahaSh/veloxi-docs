@@ -1,0 +1,501 @@
+---
+title: Plugins
+description: Plugins in Veloxi
+head:
+  - tag: title
+    content: Plugins | Veloxi
+---
+
+import PluginCode from '@components/PluginCode.vue'
+
+Plugins form the core of Veloxi's functionality. You can envision a plugin as a small application integrated into your main Veloxi application (created with `createApp()`).
+
+Without creating and using plugins, Veloxi can't do anything. Therefore, it's important to understand how they work and how to use them—they are quite simple.
+
+## Creating a Plugin
+
+There are two API styles for creating a plugin: Functions and Classes. There is no difference between them; it's merely a matter of coding preference—some developers favor classes, while others prefer functions.
+
+To create a plugin using classes, you simply need to extend the main `Plugin` class from Veloxi.
+
+```js
+import { Plugin } from 'veloxi'
+
+class MyPlugin extends Plugin {
+  static pluginName = 'MyPlugin'
+}
+```
+
+To create a plugin using functions, you just need to define a function that accepts a `context` object.
+
+```js
+const MyPlugin = (context) => {}
+
+MyPlugin.pluginName = 'MyPlugin'
+```
+
+In both cases, it's important to note that each plugin must specify its name, as shown above.
+
+Going forward, you can select your preferred coding style by using the toggle provided above each code snippet.
+
+## Using a Plugin
+
+To use a plugin, you need to add it to your Veloxi app instance using `app.addPlugin()`.
+
+<PluginCode client:load>
+  <div slot="FunctionalStyle">
+    ```js
+    import { createApp } from 'veloxi'
+
+    const MyPlugin = (context) => {}
+    MyPlugin.pluginName = 'MyPlugin'
+
+    const app = createApp()
+    app.addPlugin(MyPlugin)
+    ```
+
+  </div>
+  <div slot="ClassicalStyle">
+    ```js
+    import { createApp, Plugin } from 'veloxi'
+
+    class MyPlugin extends Plugin {
+      static pluginName = 'MyPlugin'
+    }
+
+    const app = createApp()
+    app.addPlugin(MyPlugin)
+    ```
+
+  </div>
+</PluginCode>
+
+## Run The App
+
+Creating an app instance by itself won't activate the app. To start it, you need to explicitly invoke the run() method on your app instance.
+
+```js
+// ...
+const app = createApp()
+app.run()
+```
+
+When you run the app, Veloxi adds listeners to native events, such as pointer and keyboard events, and initiates the app loop. Within this loop, Veloxi reads, updates, and renders each view during each frame.
+
+## Plugin setup()
+
+Each plugin has a single opportunity to perform all the necessary preparations for its state and views. You can consider this as the plugin's entry point, which is defined within the `setup()` function.
+
+<PluginCode client:load>
+  <div slot="FunctionalStyle">
+    ```js
+    import { createApp } from 'veloxi'
+
+    const MyPlugin = (context) => {
+      context.setup(() => {
+        console.log('Setup is called!')
+      })
+    }
+    MyPlugin.pluginName = 'MyPlugin'
+
+    const app = createApp()
+    app.addPlugin(MyPlugin)
+    app.run()
+    ```
+
+  </div>
+  <div slot="ClassicalStyle">
+    ```js
+    import { createApp, Plugin } from 'veloxi'
+
+    class MyPlugin extends Plugin {
+      static pluginName = 'MyPlugin'
+
+      setup() {
+        console.log('Setup is called!')
+      }
+    }
+
+    const app = createApp()
+    app.addPlugin(MyPlugin)
+    app.run()
+    ```
+
+  </div>
+</PluginCode>
+
+## Accessing Views
+
+To access a view within a plugin, you must first assign it to that plugin. Then, you can utilize `getViews(viewName)` to retrieve multiple views or `getView(viewName)` to retrieve a single one (typically the first one if you have defined multiple).
+
+To assign a view to a plugin, use `data-vel-plugin="MyPlugin"` on the desired element.
+
+```html
+<div data-vel-view="circle" data-vel-plugin="MyPlugin"></div>
+<div data-vel-view="circle" data-vel-plugin="MyPlugin"></div>
+```
+
+In this case we have created two views named `circle` and assigned them to a plugin named `MyPlugin`.
+
+Here's how you can access them:
+
+<PluginCode client:load>
+  <div slot="FunctionalStyle">
+    ```js
+    import { createApp } from 'veloxi'
+
+    const MyPlugin = (context) => {
+      context.setup(() => {
+        // It will have an array of views for all
+        // elements with the view name `circle`
+        const circles = context.getViews('circle')
+
+        // This will get the first circle of both views.
+        // It will be the same as circles[0]
+        const firstCircle = context.getView('circle')
+      })
+    }
+    MyPlugin.pluginName = 'MyPlugin'
+
+    const app = createApp()
+    app.addPlugin(MyPlugin)
+    app.run()
+    ```
+
+  </div>
+  <div slot="ClassicalStyle">
+    ```js
+    import { createApp, Plugin } from 'veloxi'
+
+    class MyPlugin extends Plugin {
+      static pluginName = 'MyPlugin'
+
+      setup() {
+        // It will have an array of views for all
+        // elements with the view name `circle`
+        const circles = this.getViews('circle')
+
+        // This will get the first circle of both views.
+        // It will be the same as circles[0]
+        const firstCircle = this.getView('circle')
+      }
+    }
+
+    const app = createApp()
+    app.addPlugin(MyPlugin)
+    app.run()
+    ```
+
+  </div>
+</PluginCode>
+
+## Scoped Plugins
+
+The previous example works well when you intend to create an interaction involving multiple views, perhaps where they interact with each other.
+
+However, what if you want the plugin to exclusively operate with one view at a time? In other words, you need a mechanism to generate a new plugin instance for each view.
+
+This can be accomplished using scoped plugins.
+
+Scoped plugins are designed to operate within the context of a particular view. To employ them, simply assign the `scope` property with the name of the desired view.
+
+<PluginCode client:load>
+  <div slot="FunctionalStyle">
+    ```js
+    import { createApp } from 'veloxi'
+
+    const MyPlugin = (context) => {
+      context.setup(() => {
+        // This will get the circle view it was scoped to.
+        const theCircle = context.getView('circle')
+      })
+    }
+
+    MyPlugin.pluginName = 'MyPlugin'
+
+    // This plugin is now scoped to the circle view.
+    MyPlugin.scope = 'circle'
+
+    const app = createApp()
+    app.addPlugin(MyPlugin)
+    app.run()
+    ```
+
+  </div>
+  <div slot="ClassicalStyle">
+    ```js
+    import { createApp, Plugin } from 'veloxi'
+
+    class MyPlugin extends Plugin {
+      static pluginName = 'MyPlugin'
+
+      // This plugin is now scoped to the circle view.
+      static scope = 'circle'
+
+      setup() {
+        // This will get the circle view it was scoped to.
+        const theCircle = this.getView('circle')
+      }
+    }
+
+    const app = createApp()
+    app.addPlugin(MyPlugin)
+    app.run()
+    ```
+
+  </div>
+</PluginCode>
+
+## Subscribe to Global Events
+
+When the user clicks the mouse or touches the screen, Veloxi generates a global event related to that action. All added plugins can listen to this event and respond accordingly.
+
+To subscribe to a global event, you can utilize the global `eventBus` provided to the `subscribeToEvents()` function.
+
+<PluginCode client:load>
+  <div slot="FunctionalStyle">
+    ```js
+    import { createApp, Events } from 'veloxi'
+
+    const MyPlugin = (context) => {
+      context.subscribeToEvents((eventBus) => {
+        // Subscribe to PointerMoveEvent
+        eventBus.subscribeToEvent(Events.PointerMoveEvent, (event) => {
+          console.log('PointerMoveEvent fired', event);
+        })
+
+        // Subscribe to PointerDownEvent
+        eventBus.subscribeToEvent(Events.PointerDownEvent, (event) => {
+          console.log('PointerDownEvent fired', event);
+        })
+      })
+    }
+
+    MyPlugin.pluginName = 'MyPlugin'
+
+    const app = createApp()
+    app.addPlugin(MyPlugin)
+    app.run()
+    ```
+
+  </div>
+  <div slot="ClassicalStyle">
+    ```js
+    import { createApp, Plugin, Events } from 'veloxi'
+
+    class MyPlugin extends Plugin {
+      static pluginName = 'MyPlugin'
+
+      subscribeToEvents(eventBus) {
+        // Subscribe to PointerMoveEvent
+        eventBus.subscribeToEvent(Events.PointerMoveEvent, (event) => {
+          console.log('PointerMoveEvent fired', event);
+        })
+
+        // Subscribe to PointerDownEvent
+        eventBus.subscribeToEvent(Events.PointerDownEvent, (event) => {
+          console.log('PointerDownEvent fired', event);
+        })
+      }
+    }
+
+    const app = createApp()
+    app.addPlugin(MyPlugin)
+    app.run()
+    ```
+
+  </div>
+</PluginCode>
+
+Currently, Veloxi supports only these events:
+
+- PointerClickEvent
+- PointerMoveEvent
+- PointerDownEvent
+- PointerUpEvent
+
+The `event` object in all pointer events includes these three values:
+
+- **x**: The x position of the pointer.
+- **y**: The y position of the pointer.
+- **target**: the [EventTarget](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget) of the pointer.
+
+## Emit Events
+
+The primary method for your plugin to communicate with the outside world is through events. Your plugin emits events, and your Veloxi app object listens to them.
+
+To emit an event, you need to define the event and then invoke `emit(YourEvent, eventData)` within the plugin.
+
+<PluginCode client:load>
+  <div slot="FunctionalStyle">
+    ```js
+    import { createApp } from 'veloxi'
+
+    // Define your event
+    class MyEvent {
+      constructor(event) {
+        this.foo = event.foo
+      }
+    }
+
+    const MyPlugin = (context) => {
+      context.setup(() => {
+        context.emit(MyEvent, { foo: 'bar' })
+      })
+    }
+
+    MyPlugin.pluginName = 'MyPlugin'
+
+    const app = createApp()
+    app.addPlugin(MyPlugin)
+    app.run()
+
+    // Listen to MyEvent event emitted from MyPlugin
+    app.onPluginEvent(MyPlugin, MyEvent, (event) => {
+      console.log('MyEvent was fired with foo value:', event.foo)
+    })
+    ```
+
+  </div>
+  <div slot="ClassicalStyle">
+    ```js
+    import { createApp, Plugin } from 'veloxi'
+
+    // Define your event
+    class MyEvent {
+      constructor(event) {
+        this.foo = event.foo
+      }
+    }
+
+    class MyPlugin extends Plugin {
+      static pluginName = 'MyPlugin'
+
+      setup() {
+        this.emit(MyEvent, { foo: 'bar' })
+      }
+    }
+
+    const app = createApp()
+    app.addPlugin(MyPlugin)
+    app.run()
+
+    // Listen to MyEvent event emitted from MyPlugin
+    app.onPluginEvent(MyPlugin, MyEvent, (event) => {
+      console.log('MyEvent was fired with foo value:', event.foo)
+    })
+    ```
+
+  </div>
+</PluginCode>
+
+## Plugin Config
+
+Sometimes, you'll need to provide settings to the plugin to modify how it works. For example, when creating a resizing plugin, users might want to specify the maximum width and height for view expansion.
+
+Users can pass these settings through the second argument of `app.addPlugin(Plugin, config)`. Your plugin can then access and utilize these settings via the `config` field.
+
+<PluginCode client:load>
+  <div slot="FunctionalStyle">
+    ```js
+    import { createApp } from 'veloxi'
+
+    const ResizePlugin = (context) => {
+      context.setup(() => {
+        const maxWidth = context.config.maxWidth
+      })
+    }
+
+    ResizePlugin.pluginName = 'ResizePlugin'
+
+    const app = createApp()
+    app.addPlugin(ResizePlugin, { maxWidth: 500 })
+    app.run()
+    ```
+
+  </div>
+  <div slot="ClassicalStyle">
+    ```js
+    import { createApp, Plugin } from 'veloxi'
+
+    class ResizePlugin extends Plugin {
+      static pluginName = 'ResizePlugin'
+
+      setup() {
+        const maxWidth = this.config.maxWidth
+      }
+    }
+
+    const app = createApp()
+    app.addPlugin(ResizePlugin, { maxWidth: 500 })
+    app.run()
+
+    ```
+
+  </div>
+</PluginCode>
+
+## Plugin's Update and Render Hooks
+
+The main app loop consists of four main steps, executed in the following sequence:
+
+- Handling events
+- Reading view properties
+- Updating views
+- Rendering views
+
+In every frame, we have the chance to update and then render our views. This will be useful when we want to have full control over views per frame.
+
+The frame update and render code go into the `update` and `render` functions, respectively.
+
+<PluginCode client:load>
+  <div slot="FunctionalStyle">
+    ```js
+    import { createApp } from 'veloxi'
+
+    const MyPlugin = (context) => {
+
+      // ts: is the timestamp since the beginning of the execution.
+      // td: is delta time (the time passed since the last frame).
+      context.update((ts, td) => {
+        console.log('UPDATE')
+      })
+
+      context.render(() => {
+        console.log('RENDER')
+      })
+    }
+
+    MyPlugin.pluginName = 'MyPlugin'
+
+    const app = createApp()
+    app.addPlugin(MyPlugin)
+    app.run()
+    ```
+
+  </div>
+  <div slot="ClassicalStyle">
+    ```js
+    import { createApp, Plugin } from 'veloxi'
+
+    class MyPlugin extends Plugin {
+      static pluginName = 'MyPlugin'
+
+      // ts: is the timestamp since the beginning of the execution.
+      // td: is delta time (the time passed since the last frame).
+      update(ts, td) {
+        console.log('UPDATE')
+      }
+
+      render() {
+        console.log('RENDER')
+      }
+    }
+
+    const app = createApp()
+    app.addPlugin(MyPlugin)
+    app.run()
+    ```
+
+  </div>
+</PluginCode>

@@ -1,0 +1,149 @@
+---
+title: Event Plugins
+description: Event Plugins in Veloxi
+head:
+  - tag: title
+    content: Event Plugins | Veloxi
+---
+
+import PluginCode from '@components/PluginCode.vue'
+
+Event plugins are plugins that can't manipulate views but can read them and emit events about them.
+
+## Why Event Plugins?
+
+The main rule when using plugins in Veloxi is that nesting plugins is not allowed. In other words, each view can only be assigned to a single plugin.
+
+However, there are instances where we need to encapsulate certain logic within a plugin and reuse it across multiple plugins. One such scenario is the detection of a drag event on a specific view.
+
+While it's possible to implement the drag event within our plugin using various global events that Veloxi provides (such as `PointerDownEvent` and `PointerMoveEvent`), this approach isn't practical, as these events may need to be reused in multiple plugins.
+
+Since event plugins can't manipulate view, it's safe to use them inside our plugins. For instance, Veloxi has a built-in event plugin named `DragEventPlugin`, which detects drag events occurring on specific views.
+
+Let's see how to use it.
+
+## Using Event Plugins
+
+To use an event plugin, you need first to import it and then use `useEventPlugin(EventPlugin)` function on it.
+
+<PluginCode client:load>
+  <div slot="FunctionalStyle">
+    ```js
+    import { createApp, DragEventPlugin, DragEvent } from 'veloxi'
+
+    const MyPlugin = (context) => {
+
+      // Use an event plugin
+      const dragEventPlugin = context.useEventPlugin(DragEventPlugin)
+
+      context.setup(() => {
+        const myView = context.getView('myView')
+
+        // Add views to the event plugin
+        dragEventPlugin.addView(myView)
+
+        // Listen to the event plugin events
+        dragEventPlugin.on(DragEvent, (event) => {
+          console.log('DragEvent fired with event object', event)
+        })
+      })
+    }
+
+    MyPlugin.pluginName = 'MyPlugin'
+    MyPlugin.scope = 'myView'
+
+    const app = createApp()
+    app.addPlugin(MyPlugin)
+    app.run()
+    ```
+
+  </div>
+  <div slot="ClassicalStyle">
+    ```js
+    import { createApp, Plugin, DragEventPlugin, DragEvent } from 'veloxi'
+
+    class MyPlugin extends Plugin {
+      static pluginName = 'MyPlugin'
+      static scope = 'myView'
+
+      // Use an event plugin
+      dragEventPlugin = this.useEventPlugin(DragEventPlugin)
+
+      setup() {
+        const myView = this.getView('myView')
+
+        // Add views to the event plugin
+        this.dragEventPlugin.addView(myView)
+
+        // Listen to the event plugin events
+        this.dragEventPlugin.on(DragEvent, (event) => {
+          console.log('DragEvent fired with event object', event)
+        })
+      }
+    }
+
+    const app = createApp()
+    app.addPlugin(MyPlugin)
+    app.run()
+    ```
+
+  </div>
+</PluginCode>
+
+## Built-in Event Plugins
+
+Currently, Veloxi provides two built-in event plugin that you can use them in your projects: [DragEventPlugin](/guides/event-plugins/#built-in-event-plugins) and [SwipeEventPlugin](/guides/event-plugins/#swipeeventplugin). Let's learn about them.
+
+### DragEventPlugin
+
+The DragEventPlugin is used to listen for drag events on a view. The event object in the listener includes the following:
+
+- **view**: The view instance that was dragged.
+- **previousX**: The previous x position of the drag event (from the last frame).
+- **previousY**: The previous y position of the drag event (from the last frame).
+- **x**: The current x position of the drag event.
+- **y**: The current y position of the drag event.
+- **isDragging**: A boolean that indicates whether the view is currently being dragged.
+- **target**: The [EventTarget](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget) of the dragged element.
+- **directions**: An array of drag directions, including `up`, `down`, `left`, and `right`.
+- **width**: The horizontal distance moved by the user during dragging, measured in pixels.
+- **height**: The vertical distance moved by the user during dragging, measured in pixels.
+
+### SwipeEventPlugin
+
+The SwipeEventPlugin is used to listen for swipe events on a view. The event object in the listener includes the following:
+
+- **view**: The view instance that was swiped.
+- **direction**: A string indicating the swipe direction, which can be one of the following: `up`, `down`, `left`, or `right`.
+
+## Create Your Own Event Plugin
+
+In the current version of Veloxi, you can create Event Plugins only using classes.
+
+Creating Event Plugins is very similar to regular plugins, with a few distinctions:
+
+- Event Plugins do not include update or render hooks.
+- Event Plugins should not preform view updates.
+- Event Plugins should not be scoped.
+
+To create an Event Plugin, use the `EventPlugin` as the base class.
+
+```js
+import { EventPlugin } from 'veloxi'
+
+// Define your event
+export class MyEvent {
+  constructor(event) {
+    this.foo = event.foo
+  }
+}
+
+export class MyEventPlugin extends EventPlugin {
+  static pluginName = 'MyEventPlugin'
+
+  setup() {
+    // Event Plugins can emit events just like regular plugins
+    this.emit(MyEvent, { foo: 'bar' })
+  }
+}
+```

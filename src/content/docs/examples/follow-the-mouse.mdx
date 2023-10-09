@@ -1,0 +1,47 @@
+---
+title: Follow the mouse
+description: Veloxi example for implementing follow the mouse interaction
+head:
+  - tag: title
+    content: Follow the mouse | Veloxi
+---
+
+import PluginCode from '@components/PluginCode.vue'
+import FollowMouse from '@examples/FollowMouse.astro'
+import FollowMouseFunctional from '@code/introduction/FollowMouseFunctional.mdx'
+import FollowMouseClassical from '@code/introduction/FollowMouseClassical.mdx'
+
+<FollowMouse />
+
+## HTML
+
+```html
+<div
+  class="circle"
+  data-vel-view="circle"
+  data-vel-plugin="FollowMousePlugin"
+></div>
+```
+
+## CSS
+
+```css
+.circle {
+  width: 50px;
+  height: 50px;
+  background: whitesmoke;
+  border-radius: 50%;
+  will-change: transform;
+}
+```
+
+## JavaScript
+
+<PluginCode client:load>
+  <div slot="FunctionalStyle">
+    <FollowMouseFunctional />
+  </div>
+  <div slot="ClassicalStyle">
+    <FollowMouseClassical />
+  </div>
+</PluginCode>

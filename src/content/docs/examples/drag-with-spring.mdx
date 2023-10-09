@@ -1,0 +1,48 @@
+---
+title: Drag with a spring
+description: Veloxi example for implementing drag with a spring interaction
+head:
+  - tag: title
+    content: Drag with a spring | Veloxi
+---
+
+import PluginCode from '@components/PluginCode.vue'
+import DragWithSpring from '@examples/DragWithSpring.astro'
+import DragWithSpringFunctional from '@code/examples/DragWithSpringFunctional.mdx'
+import DragWithSpringClassical from '@code/examples/DragWithSpringClassical.mdx'
+
+<DragWithSpring />
+
+## HTML
+
+```html
+<div
+  class="box"
+  data-vel-view="draggable"
+  data-vel-plugin="DragWithSpringPlugin"
+></div>
+```
+
+## CSS
+
+```css
+.box {
+  width: 80px;
+  height: 80px;
+  background: whitesmoke;
+  border-radius: 5px;
+  touch-action: none;
+  will-change: transform;
+}
+```
+
+## JavaScript
+
+<PluginCode client:load>
+  <div slot="FunctionalStyle">
+    <DragWithSpringFunctional />
+  </div>
+  <div slot="ClassicalStyle">
+    <DragWithSpringClassical />
+  </div>
+</PluginCode>

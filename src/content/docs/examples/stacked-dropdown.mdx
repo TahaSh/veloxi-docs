@@ -1,0 +1,108 @@
+---
+title: Stacked dropdown
+description: Veloxi example for implementing stacked dropdown interaction
+head:
+  - tag: title
+    content: Stacked dropdown | Veloxi
+---
+
+import PluginCode from '@components/PluginCode.vue'
+import StackedDropdown from '@examples/StackedDropdown.astro'
+import StackedDropdownFunctional from '@code/examples/StackedDropdownFunctional.mdx'
+import StackedDropdownClassical from '@code/examples/StackedDropdownClassical.mdx'
+
+This example was inspired by [traf](https://tr.af/)'s work using [framer](https://framer.university/resources/dropdown-component-by-traf).
+
+<StackedDropdown />
+
+## HTML
+
+```html
+<div
+  class="dropdown"
+  data-vel-plugin="DropdownPlugin"
+  data-vel-view="container"
+  data-vel-data-open="false"
+>
+  <div
+    class="item top-item"
+    data-vel-plugin="DropdownPlugin"
+    data-vel-view="item"
+  >
+    List
+    <svg
+      class="icon"
+      fill="none"
+      viewBox="0 0 32 32"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        clip-rule="evenodd"
+        d="m4.93934 10.9393c.58579-.5857 1.53553-.5857 2.12132 0l8.93934 8.9394 8.9393-8.9394c.5858-.5857 1.5356-.5857 2.1214 0 .5857.5858.5857 1.5356 0 2.1214l-10 10c-.5858.5857-1.5356.5857-2.1214 0l-9.99996-10c-.58579-.5858-.58579-1.5356 0-2.1214z"
+        fill="currentColor"
+        fill-rule="evenodd"
+      />
+    </svg>
+  </div>
+  <div class="item" data-vel-plugin="DropdownPlugin" data-vel-view="item">
+    Item 1
+  </div>
+  <div class="item" data-vel-plugin="DropdownPlugin" data-vel-view="item">
+    Item 2
+  </div>
+  <div class="item" data-vel-plugin="DropdownPlugin" data-vel-view="item">
+    Item 3
+  </div>
+  <div class="item" data-vel-plugin="DropdownPlugin" data-vel-view="item">
+    Item 4
+  </div>
+</div>
+```
+
+## CSS
+
+```css
+.dropdown {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+  gap: 10px 0;
+}
+
+.item {
+  background: hsl(208.7, 60%, 20%);
+  color: white;
+  width: 100%;
+  padding: 20px 15px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  box-shadow: 0px -1px 10px rgba(0, 0, 0, 0.24);
+}
+
+.icon {
+  transform: rotate(-90deg);
+  width: 18px;
+  color: white;
+}
+
+.dropdown[data-vel-data-open='true'] .icon {
+  transform: rotate(0deg);
+}
+```
+
+## JavaScript
+
+<PluginCode client:load>
+  <div slot="FunctionalStyle">
+    <StackedDropdownFunctional />
+  </div>
+  <div slot="ClassicalStyle">
+    <StackedDropdownClassical />
+  </div>
+</PluginCode>

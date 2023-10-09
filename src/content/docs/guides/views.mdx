@@ -1,0 +1,454 @@
+---
+title: Views
+description: Views in Veloxi
+head:
+  - tag: title
+    content: Views | Veloxi
+---
+
+import PluginCode from '@components/PluginCode.vue'
+
+Instead of directly dealing with the DOM, Veloxi simplifies the handling of its elements by providing an easy, yet effective API for manipulation and animation.
+
+## Creating Views
+
+There isn't a dedicated API for manually creating views in Veloxi. Instead, Veloxi automatically generates views when you specify the element for which you want to create a view.
+
+To achieve this, you use the `data-vel-view="yourViewName"` attribute. However, it's essential to remember that a view remains inactive until it's associated with a specific plugin. To establish this association, you need to use the `data-vel-plugin="yourPluginName"` attribute on the same element.
+
+Here's an example illustrating the creation of a view named `circle`, which is used within a plugin called `FollowMousePlugin`:"
+
+```html
+<div data-vel-view="circle" data-vel-plugin="FollowMousePlugin"></div>
+```
+
+Then you can access it in your plugin like this (for more details, check out our [plugin guide](http://localhost:4321/guides/plugins/#accessing-views)):
+
+<PluginCode client:load>
+  <div slot="FunctionalStyle">
+    ```js
+    import { createApp } from 'veloxi'
+
+    const FollowMousePlugin = (context) => {
+      context.setup(() => {
+        const circle = context.getView('circle')
+      })
+    }
+    MyPlugin.pluginName = 'FollowMousePlugin'
+
+    const app = createApp()
+    app.addPlugin(FollowMousePlugin)
+    app.run()
+    ```
+
+  </div>
+  <div slot="ClassicalStyle">
+    ```js
+    import { createApp, Plugin } from 'veloxi'
+
+    class FollowMousePlugin extends Plugin {
+      static pluginName = 'FollowMousePlugin'
+
+      setup() {
+        const circle = this.getView('circle')
+      }
+    }
+
+    const app = createApp()
+    app.addPlugin(FollowMousePlugin)
+    app.run()
+    ```
+
+  </div>
+</PluginCode>
+
+## View Properties
+
+Every view object comes with a set of properties that you can both retrieve and modify. Currently, the supported properties include:
+
+- **Position**: Specifies the x and y coordinates of the view on the page.
+- **Scale**: Determines the scaleX and scaleY properties of the view, corresponding to [transform's scale properties](https://developer.mozilla.org/en-US/docs/Web/CSS/scale).
+- **Size**: Represents the actual width and height of the view.
+- **Rotation**: Denotes the degree of rotation for the view, along the z-axis.
+
+Each view property is an object that contains a list of methods and fields that enable you to read and update its values.
+
+In the upcoming sections, we will examine each property in detail and explore how to retrieve and modify their values.
+
+### View Position
+
+To access the position property, you can use `view.position`. Each view begins with an initial position on the page, which you can retrieve using `view.position.initialX` and `view.position.initialY`.
+
+```js
+// This will have the initial position based on where the element was rendered in the DOM
+const initialX = myView.position.initialX
+const initialY = myView.position.initialY
+
+// This will have the current position after it's moved
+const currentX = myView.position.x
+const currentY = myView.position.y
+```
+
+To change the position of a view, you can use the `set({ x, y }, runAnimation?)` method for that.
+
+```js
+// Move the view to the position x: 200px, y: 400px on the page
+myView.position.set({
+  x: 200,
+  y: 400
+})
+
+// Move the view to the position x: 400px and keep y the same
+myView.position.set({
+  x: 400
+})
+
+// Move the view to the position y: 600px and keep x the same
+myView.position.set({
+  y: 600
+})
+
+// Move the view to the specified x and y positions with animation (the default)
+myView.position.set(
+  {
+    x: 100,
+    y: 100
+  },
+  true
+)
+
+// Move the view to the specified x and y positions without animation
+myView.position.set(
+  {
+    x: 100,
+    y: 100
+  },
+  false
+)
+```
+
+Here's how you can reset the view's position to its initial position:
+
+```js
+const initialX = myView.position.initialX
+const initialY = myView.position.initialY
+
+myView.position.set({
+  x: initialX,
+  y: initialY
+})
+
+// Or simply call reset(runAnimation? = true)
+myView.position.reset()
+```
+
+You can find out how close the view is to a particular point as a percentage. This percentage ranges from 0 to 1. It starts at 0 and goes up as the view gets nearer to the target point. This calculation is based on the view's starting position.
+
+```js
+// Here's a target point, or you can get it from another view
+// using { x: view.position.x, y: view.position.y }
+const targetPoint = { x: 500, y: 200 }
+
+// This will range from 0 to 1. It will be 0.5 when it's halfway to the target.
+const percentage = myView.position.progressTo(targetPoint)
+```
+
+### View Scale
+
+Scaling in Veloxi works in a way similar to adjusting the [transform's scale property](https://developer.mozilla.org/en-US/docs/Web/CSS/scale) in CSS—essentially, it applies these values to the CSS scale property
+
+So, the scale values (scaleX and scaleY) start at 1 for the initial size. If you set them to 0, the view disappears, and if you set them to 2, the view doubles in size. You can use `view.set({ x, y }, runAnimation?)` to change these values.
+
+Sometimes, we don't want to think about relative values like the ones mentioned above. Instead, we just want to resize using specific width and height values. That's exactly what `view.setWithSize({ width, height }, runAnimation?)` is for.
+
+Let's look at some usage examples:"
+
+```js
+const currentScaleX = myView.scale.x
+const currentScaleY = myView.scale.y
+
+// Grows its size to double (with animation)
+myView.scale.set(
+  {
+    x: 2,
+    y: 2
+  },
+  true
+)
+
+// Reduces its width to half (while keeping the height the same) without animation
+myView.scale.set(
+  {
+    x: 0.5
+  },
+  false
+)
+
+// Change the scale to whatever value makes the view width 200px and height 500px
+myView.scale.setWithSize({
+  width: 200,
+  height: 500
+})
+
+// Change the scale to whatever value makes the view width 200px and height 500px
+myView.scale.setWithSize({
+  width: 200,
+  height: 500
+})
+
+// Change the scale to whatever value makes the view height 400px while keeping scaleX the same
+myView.scale.setWithSize({
+  height: 400
+})
+
+// Reset scale to scaleX = 1 and scaleY = 1 with animation
+myView.scale.reset(true)
+```
+
+### View Size
+
+The size properties allow you to both retrieve and modify the width and height of the view.
+
+Here are some code examples:
+
+```js
+const currentWidth = myView.size.width
+const currentHeight = myView.size.height
+
+const initialWidth = myView.size.initialWidth
+const initialHeight = myView.size.initialHeight
+
+const currentWidthAfterScale = myView.size.widthAfterScale
+const currentHeightAfterScale = myView.size.heightAfterScale
+
+// Set width to 500px and height to 200px
+myView.size.set({
+  width: 500,
+  height: 200
+})
+
+// Set width to 200px while keeping height at the initial value
+myView.size.set({
+  width: 200
+})
+
+// Reset width and height to initial values
+myView.size.reset()
+```
+
+### View Rotation
+
+In the current version, Veloxi only supports rotation along the z-axis. You can set and get values in either radians or degrees.
+
+Here are some code examples:
+
+```js
+const rotationInDegrees = myView.rotation.degrees
+const rotationInRadians = myView.rotation.radians
+
+// With animation
+myView.rotation.setDegrees(45)
+// Without animation
+myView.rotation.setDegrees(45, false)
+
+// With animation
+myView.rotation.setRadians(0.1)
+// Without animation
+myView.rotation.setRadians(0.1, false)
+```
+
+## View Animators
+
+Animation plays an essential role in UI interaction, and Veloxi simplifies its use by encapsulating all animation configurations within an object called `animator`.
+
+You can directly access the animator object for any [view proprety](/guides/views/#view-properties) you wish to animate, such as position, scale, size, and rotation.
+
+For instance, if you want to apply animation to the position property, you can invoke the `set(animationName)` method on its animator, like this:
+
+```js
+myView.position.animator.set('spring')
+```
+
+From that point onward, whenever the position of that view changes, it will use the spring animator for animation.
+
+By default, animation is disabled for all properties. This is because the default animator type used is `instant`, which effectively means 'no animation.'
+
+Currently, Veloxi supports the following animation types:
+
+- **instant**: No animation.
+- **tween**: Animation with a defined start and end, with control over its duration and easing function.
+- **dynamic**: Tailored for real-time responsive interactions, such as following the mouse or dragging. You can control its speed.
+- **spring**: Applies spring animation, with adjustable parameters for _stiffness_, _damping_, and _speed_.
+
+Let's take a look at some code examples:
+
+```js
+// Dynamic animator with default speed
+myView.position.animator.set('dynamic', { speed: 15 })
+
+// Spring animator with default values
+myView.size.animator.set('spring', {
+  stiffness: 0.5,
+  damping: 0.75,
+  speed: 10
+})
+
+// Tween animator with default values
+myView.scale.animator.set('spring', {
+  duration: 500, // 500ms
+  ease: (t) => t // linear easing function
+})
+
+// Instant animator doesn't have config values
+myView.rotation.animator.set('instant')
+```
+
+## View Data
+
+If [emitting events](/guides/plugins/#emit-events) is how plugins communicate with the outside world, _View Data_ is the method for communication in the opposite direction.
+
+When building real-world applications, there's typically some app or component state that manages the UI. Regardless of whether you're working with a framework or vanilla JavaScript, it's recommended to handle updates to that state outside of Veloxi. Instead, use Veloxi exclusively for creating interactions related to those state changes.
+
+For instance, imagine you have a dropdown component that users can open and close with [some cool animation](https://codepen.io/tahazsh/full/yLGKLqa). Clicking the top-level item in the dropdown should expand all nested items. At this point, you have two options: you can either respond directly to the click event and update the UI using CSS or JavaScript, or you can toggle a flag (or set some data) to indicate the change and let Veloxi handle the UI update and animation.
+
+For the latter, you can use _View Data_ to communicate the change to Veloxi.
+
+In Veloxi, you can transmit data to views using a data attribute on the element, like this: `data-vel-data-prop-name="propValue"`. In this notation, `prop-name` can be any name you choose, and `propValue` can be any value you want.
+
+Within your plugin, you can access this data using `myView.data.propName`. Notice how we use camel case for the data name.
+
+In the context of the dropdown example, you can pass the current state of the dropdown to this data attribute, like so:"
+
+```html
+<div
+  class="dropdown"
+  data-vel-plugin="DropdownPlugin"
+  data-vel-view="container"
+  data-vel-data-is-open="false"
+>
+  <!-- ... -->
+</div>
+```
+
+And then, you can access that **isOpen** data in the _DropdownPlugin_.
+
+<PluginCode client:load>
+  <div slot="FunctionalStyle">
+    ```js
+    import { createApp } from 'veloxi'
+
+    const DropdownPlugin = (context) => {
+      let dropdownContainer
+      context.setup(() => {
+        dropdownContainer = context.getView('container')
+        // The open state data
+        const isOpen = isOpen()
+      })
+
+      // Put the access code in a function to make it dynamic
+      function isOpen() {
+        return dropdownContainer.data.isOpen === 'true'
+      }
+    }
+
+    DropdownPlugin.pluginName = 'DropdownPlugin'
+    DropdownPlugin.scope = 'container'
+
+    const app = createApp()
+    app.addPlugin(DropdownPlugin)
+    app.run()
+    ```
+
+  </div>
+  <div slot="ClassicalStyle">
+    ```js
+    import { createApp, Plugin } from 'veloxi'
+
+    class DropdownPlugin extends Plugin {
+      static pluginName = 'DropdownPlugin'
+      static scope = 'container'
+
+      dropdownContainer
+
+      setup() {
+        this.dropdownContainer = this.getView('container')
+        // The open state data
+        const isOpen = this.isOpen
+      }
+
+      // Put access code in a getter to make it dynamic
+      get isOpen() {
+        return this.dropdownContainer.data.isOpen === 'true'
+      }
+    }
+
+    const app = createApp()
+    app.addPlugin(DropdownPlugin)
+    app.run()
+
+    ```
+
+  </div>
+</PluginCode>
+
+## Other View Fields
+
+### `element`
+
+Returns the DOM element for the view.
+
+```js
+const element = myView.element
+```
+
+### `hasElement(element: HTMLElement): boolean`
+
+Returns a boolean indicating whether a view contains a specific DOM element.
+
+```js
+if (myView.hasElement(someElement)) {
+  // do something
+}
+```
+
+### `getScroll(): { x: number, y: number }`
+
+Returns the current horizontal and vertical scroll positions for the view on the page. It's similar to getting the page scroll using `window.scrollY` and `window.scrollX`, but it also takes into account any scrolling happening inside a parent container, if there is one.
+
+See how it's used in [Follow-The-Mouse example](/examples/follow-the-mouse/).
+
+```js
+const { x, y } = myView.getScroll()
+```
+
+### `intersects(x: number, y: number): boolean`
+
+Returns whether a point (x and y) falls inside the view.
+
+```js
+const clickPosition = { x: 100, y: 200 }
+if (myView.intersects(clickPosition)) {
+  console.log('clicked on the view')
+}
+```
+
+### `overlapsWith(view: View): boolean`
+
+Returns whether the view overlaps with another view.
+
+```js
+if (myView.overlapsWith(otherView)) {
+  console.log('Both views overlap')
+}
+```
+
+### `distanceTo(view: View): number`
+
+Returns the distance between two views in pixels.
+
+```js
+const distance = myView.distanceTo(otherView)
+if (distance > 100) {
+  // If the distance between both views is greater than 100px, do something
+}
+```

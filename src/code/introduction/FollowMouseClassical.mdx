@@ -1,0 +1,38 @@
+```js
+import { createApp, Events, Plugin } from 'veloxi'
+
+class FollowMousePlugin extends Plugin {
+  // Specify the name of the plugin
+  static pluginName = 'FollowMousePlugin'
+
+  circle
+
+  setup() {
+    // Fetch the circle view
+    circle = context.getView('circle')
+    // Use the spring animator on the position property of the view
+    circle.position.animator.set('spring')
+  }
+
+  // Subscribe to global events here
+  subscribeToEvents(eventBus) {
+    // Subscribe to the PointerMoveEvent global event
+    eventBus.subscribeToEvent(Events.PointerMoveEvent, (event) => {
+      // When the mouse moves, update the position of the circle
+      circle.position.set({
+        x: event.x + circle.getScroll().x - circle.size.width / 2,
+        y: event.y + circle.getScroll().y - circle.size.height / 2
+      })
+    })
+  }
+}
+
+// Create a new Veloxi app
+const app = createApp()
+
+// Add the FollowMousePlugin to it
+app.addPlugin(FollowMousePlugin)
+
+// And finally run the app
+app.run()
+```

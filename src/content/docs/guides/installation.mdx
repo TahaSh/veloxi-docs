@@ -1,0 +1,49 @@
+---
+title: Installation
+description: How to install Veloxi
+head:
+  - tag: title
+    content: Installation | Veloxi
+---
+
+You can install Veloxi using your favorite package manager.
+
+PNPM:
+
+```bash
+pnpm install veloxi
+```
+
+NPM:
+
+```bash
+npm install veloxi
+```
+
+Yarn:
+
+```bash
+yarn add veloxi
+```
+
+Then, import it like this:
+
+```js
+import { createApp } from 'veloxi'
+
+const app = createApp()
+```
+
+## Using Veloxi from CDN
+
+You can include it directly in a script tag:
+
+```html
+<script src="https://unpkg.com/veloxi/dist/veloxi.min.js"></script>
+```
+
+Then, you can access its exports using the `Veloxi` global variable:
+
+```js
+const app = Veloxi.createApp()
+```

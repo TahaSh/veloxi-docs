@@ -1,0 +1,49 @@
+---
+title: Resize with spring animation
+description: Veloxi example for implementing Resize with spring animation interaction
+head:
+  - tag: title
+    content: Resize with spring animation | Veloxi
+---
+
+import PluginCode from '@components/PluginCode.vue'
+import ResizeWithSpringAnimation from '@examples/ResizeWithSpringAnimation.astro'
+import ResizeWithSpringAnimationFunctional from '@code/examples/ResizeWithSpringAnimationFunctional.mdx'
+import ResizeWithSpringAnimationClassical from '@code/examples/ResizeWithSpringAnimationClassical.mdx'
+
+<ResizeWithSpringAnimation />
+
+## HTML
+
+```html
+<div class="container" data-vel-plugin="ResizePlugin" data-vel-view="resizable">
+  Lorem ipsum dolor sit amet consectetur adipisicing elit. Officia, ducimus
+  officiis accusantium sunt error quod magnam, optio suscipit nostrum ea, quia
+  eius praesentium voluptas soluta minus enim facilis culpa. Repellendus?
+</div>
+```
+
+## CSS
+
+```css
+.container {
+  background: whitesmoke;
+  overflow: hidden;
+  padding: 10px;
+  border-radius: 10px;
+  color: #222;
+  width: 200px;
+  transform-origin: left top;
+}
+```
+
+## JavaScript
+
+<PluginCode client:load>
+  <div slot="FunctionalStyle">
+    <ResizeWithSpringAnimationFunctional />
+  </div>
+  <div slot="ClassicalStyle">
+    <ResizeWithSpringAnimationClassical />
+  </div>
+</PluginCode>

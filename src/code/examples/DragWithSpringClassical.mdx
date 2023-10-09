@@ -1,0 +1,35 @@
+```js
+import {
+  createApp,
+  Plugin,
+  DragEventPlugin,
+  DragEvent
+} from 'veloxi'
+
+class DragWithSpringPlugin extends Plugin {
+  static pluginName = 'DragWithSpringPlugin'
+  static scope = 'draggable'
+
+  dragEvent = this.useEventPlugin(DragEventPlugin)
+
+  setup () {
+    const draggable = this.getView('draggable')!
+
+    draggable.position.animator.set('spring')
+
+    dragEvent.addView(draggable)
+
+    dragEvent.on(DragEvent, (event) => {
+      if (event.isDragging) {
+        draggable.position.set({ x: event.x, y: event.y })
+      } else {
+        draggable.position.reset()
+      }
+    })
+  }
+}
+
+const app = createApp()
+app.addPlugin(DragWithSpringPlugin)
+app.run()
+```

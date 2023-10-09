@@ -1,0 +1,23 @@
+{
+  "name": "veloxi-docs",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.10.2",
+    "@astrojs/vue": "^3.0.0",
+    "@nanostores/persistent": "^0.9.1",
+    "@nanostores/vue": "^0.10.0",
+    "astro": "^3.0.6",
+    "nanostores": "^0.9.3",
+    "sharp": "^0.32.5",
+    "veloxi": "^0.0.4",
+    "vue": "^3.2.30"
+  }
+}

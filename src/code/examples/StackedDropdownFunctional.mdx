@@ -1,0 +1,62 @@
+```js
+import { createApp } from 'veloxi'
+
+const DropdownPlugin = (context) => {
+  let items = null
+  let container = null
+
+  setup() {
+    container = context.getView('container')
+    items = context.getViews('item')
+    items.forEach((item, index) => {
+      item.position.animator.set('spring')
+      item.scale.animator.set('dynamic')
+      item.styles.zIndex = `${items.length - index}`
+    })
+    updateItems(false)
+  }
+
+  updateItems(animate = true) {
+    const centerY =
+      container.position.initialY + container.size.height / 2
+    items.forEach((item, index) => {
+      if (!isOpen()) {
+        const offset = index * 8
+        item.position.set({ y: centerY - offset }, animate)
+        item.scale.set({ x: 1 - index * 0.05 }, animate)
+        item.styles.filter = `brightness(${100 - index * 5}%)`
+      } else {
+        item.position.reset(animate)
+        item.scale.reset(animate)
+        item.styles.filter = ''
+      }
+    })
+  }
+
+  function onDataChanged({ dataName }) {
+    if (dataName === 'open') {
+      updateItems()
+    }
+  }
+
+  function isOpen() {
+    return container.data.open === 'true'
+  }
+}
+
+const topItem = document.querySelector('.top-item')
+
+topItem.addEventListener('click', () => {
+  const dropdown = document.querySelector('[data-vel-view="container"]')
+  const isOpen = dropdown.dataset.velDataOpen === 'true'
+  dropdown.dataset.velDataOpen = isOpen ? 'false' : 'true'
+})
+
+const app = createApp()
+app.addPlugin(DropdownPlugin)
+
+DropdownPlugin.pluginName = 'DropdownPlugin'
+DropdownPlugin.scope = 'container'
+
+app.run()
+```
