@@ -24,6 +24,22 @@ So the relationship between these components is one-to-many: one app can contain
 
 This design decision is critical to ensure that there are no conflicts between plugins when manipulating views.
 
+## Does It Work on Server-Side Rendered Applications (SSR)?
+
+Yes, but you should create and run your Veloxi app instance only after your DOM is created and loaded.
+
+For example, if you are using SvelteKit, you need to wrap your app instance in `onMount()`.
+
+```js
+onMount(() => {
+  const app = createApp()
+  app.addPlugin(MyPlugin)
+  app.run()
+})
+```
+
+The same applies to other frameworks.
+
 ## Your First Plugin
 
 This example will provide a brief overview of how to use Veloxi. In this example, we will build a 'follow-the-mouse' interaction.
