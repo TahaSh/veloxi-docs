@@ -157,9 +157,9 @@ const percentage = myView.position.progressTo(targetPoint)
 
 Scaling in Veloxi works in a way similar to adjusting the [transform's scale property](https://developer.mozilla.org/en-US/docs/Web/CSS/scale) in CSS—essentially, it applies these values to the CSS scale property
 
-So, the scale values (scaleX and scaleY) start at 1 for the initial size. If you set them to 0, the view disappears, and if you set them to 2, the view doubles in size. You can use `view.set({ x, y }, runAnimation?)` to change these values.
+So, the scale values (scaleX and scaleY) start at 1 for the initial size. If you set them to 0, the view disappears, and if you set them to 2, the view doubles in size. You can use `view.scale.set({ x, y }, runAnimation?)` to change these values.
 
-Sometimes, we don't want to think about relative values like the ones mentioned above. Instead, we just want to resize using specific width and height values. That's exactly what `view.setWithSize({ width, height }, runAnimation?)` is for.
+Sometimes, we don't want to think about relative values like the ones mentioned above. Instead, we just want to resize using specific width and height values. That's exactly what `view.scale.setWithSize({ width, height }, runAnimation?)` is for.
 
 Let's look at some usage examples:"
 
@@ -294,7 +294,7 @@ myView.size.animator.set('spring', {
 })
 
 // Tween animator with default values
-myView.scale.animator.set('spring', {
+myView.scale.animator.set('tween', {
   duration: 500, // 500ms
   ease: (t) => t // linear easing function
 })
