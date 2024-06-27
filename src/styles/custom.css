@@ -48,3 +48,7 @@ main .content ul > li::before {
   left: 0;
   opacity: 0.6;
 }
+
+.non-doc .content-panel:has(h1#_top:not([data-page-title])) {
+  display: none;
+}

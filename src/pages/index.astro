@@ -1,0 +1,47 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro'
+import Logo from '@components/Logo.astro'
+---
+
+<div class="non-doc">
+  <StarlightPage
+    frontmatter={{
+      title: 'Veloxi',
+      description: 'UI engine for building smooth interactions in the browser.',
+      template: 'splash'
+    }}
+    hasSidebar={false}
+  >
+    <div class="mt-10 flex flex-col items-center">
+      <h1 class="flex items-center">
+        <div class="sm:w-[100px] w-[60px]">
+          <Logo />
+        </div>
+        <div
+          class="sm:-ml-3.5 -ml-1.5 !mt-0 sm:text-[100px] text-[60px] font-medium text-veloxi-blue"
+        >
+          eloxi
+        </div>
+      </h1>
+      <p class="mb-10 sm:text-2xl text-lg text-center">
+        UI engine for building smooth interactions <br /> in the browser
+      </p>
+      <div>
+        <iframe
+          style="aspect-ratio: 16/9;"
+          width="720"
+          height="404"
+          src="https://www.youtube.com/embed/n_32IiBm9wY?si=LzdgYLhFFiOTc3es"
+          title="YouTube video player"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen></iframe>
+      </div>
+      <a
+        class="mt-10 py-3.5 px-10 bg-veloxi-blue hover:bg-veloxi-blue-darker !text-white rounded-full"
+        href="/guides/introduction">GET STARTED</a
+      >
+    </div>
+  </StarlightPage>
+</div>

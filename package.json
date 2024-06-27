@@ -10,14 +10,16 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.10.2",
-    "@astrojs/vue": "^3.0.0",
-    "@nanostores/persistent": "^0.9.1",
+    "@astrojs/starlight": "^0.24.4",
+    "@astrojs/tailwind": "^5.1.0",
+    "@astrojs/vue": "^4.5.0",
+    "@nanostores/persistent": "^0.10.1",
     "@nanostores/vue": "^0.10.0",
-    "astro": "^3.0.6",
-    "nanostores": "^0.9.3",
-    "sharp": "^0.32.5",
-    "veloxi": "^0.0.4",
-    "vue": "^3.2.30"
+    "astro": "^4.11.3",
+    "nanostores": "^0.10.3",
+    "sharp": "^0.33.4",
+    "tailwindcss": "^3.4.4",
+    "veloxi": "^0.7.0",
+    "vue": "^3.4.30"
   }
 }

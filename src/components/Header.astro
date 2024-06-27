@@ -1,0 +1,31 @@
+---
+import Search from '@astrojs/starlight/components/Search.astro'
+import ThemeSelect from '@astrojs/starlight/components/ThemeSelect.astro'
+import SocialIcons from '@astrojs/starlight/components/SocialIcons.astro'
+import type { Props } from '@astrojs/starlight/props'
+import Logo from './Logo.astro'
+---
+
+<div class="flex items-center h-full">
+  <div class="flex items-center w-1/6 min-w-[160px]">
+    <a href="/" class="flex items-center">
+      <div class="sm:w-[30px] w-6">
+        <Logo />
+      </div>
+      <div class="-ml-0.5 text-2xl font-medium text-veloxi-blue">eloxi</div>
+    </a>
+    <div class="text-sm ml-4">v0.7.0</div>
+  </div>
+  <div class="flex-1">
+    <Search {...Astro.props} />
+  </div>
+  <div class="flex gap-x-5">
+    <div class="flex items-center gap-x-4">
+      <SocialIcons {...Astro.props} />
+      <div class="h-full w-px dark:bg-white/5"></div>
+    </div>
+    <div class="hidden sm:flex items-center">
+      <ThemeSelect {...Astro.props} />
+    </div>
+  </div>
+</div>
