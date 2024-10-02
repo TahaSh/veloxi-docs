@@ -1,8 +1,9 @@
 ```js
-import { createApp, DragEventPlugin } from 'veloxi'
+import { createApp, DragEventPlugin, DragEvent } from 'veloxi'
 
 const DragToReorderPlugin = (context) => {
   const dragEventPlugin = context.useEventPlugin(DragEventPlugin)
+  dragEventPlugin.on(DragEvent, onDrag)
 
   let items
 
@@ -21,8 +22,6 @@ const DragToReorderPlugin = (context) => {
       item.position.animator.set('dynamic')
       slotPositionMap.set(index, item.position.y)
     })
-
-    dragEventPlugin.on(DragEvent, onDrag.bind(this))
   })
 
   function onDrag(event) {
